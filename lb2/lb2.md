@@ -14,5 +14,24 @@
 +--------------------+</p>         
 
 <h2>Konfiguration</h2>
+<p>Den Typ des Betriebssystems angeben, welches in Virtualbox verwendet wird.</p>
+
+`config.vm.box = "ubuntu/xenial64"`
+
+<p>Eine benannte virtuelle Umgebung definieren.</p>
+
+`config.vm.define "db-server" do |db|`
+
+<p>Netzwerk Interface mit der IP-Adresse zuweisen.</p>
+
+`db.vm.network "public_network", :bridge => "eth0", ip: "192.168.1.100"`
+
+```
+db.vm.network "forwarded_port", guest: 3306, host: 3306
+db.vm.network "forwarded_port", guest: 80, host: 8306
+```
+
+`db.vm.provision "shell", path: “bootstrap.sh"`
+
 <h2>Testen</h2>
 <h2>Quellenverzeichnis</h2>
