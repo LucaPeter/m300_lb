@@ -1,7 +1,6 @@
 # LB2 - Datenbank-Server mit einer Firewall
 
 ## Inhaltsverzeichnis
-
 * 1 [Einleitung](#einleitung) 
 * 2 [Netzwerkplan](#netzwerkplan)
 * 3 [Konfiguration](#konfiguration)
@@ -10,10 +9,10 @@
 * 6 [Quellenverzeichnis](#quellenverzeichnis)
 
 ## Einleitung
-In meiner LB2 werde ich einen Datenbank-Server mit MySQL erstellen. Zudem werde ich eine Firewall einsetzen 
+In diesem Dokument sind alle wichtigen technischen Informationen zu meiner Umgebung dokumentiert. Die Umgebung besitzt einen Datenbank-Server und eine Firewall. Mit dem Notebook soll es möglich sein über das Tool "Adminer" auf die MySQL-Datenbank zuzugreifen. Der Zugriff findet mit einem Benutzer und Passwort statt. Die Firewall in der Umgebung sollte für die Sicherheit sorgen. Dabei sollen nur die beiden Ports 22 und 80 zugelassen werden, da nur diese für den Zugriff benötigt werden.
 
 ## Netzwerkplan
-     
+![Netzwerkplan](./bilder/netzwerkplan.png)    
 
 ## Konfiguration
 Eine benannte virtuelle Umgebung definieren.
@@ -61,9 +60,9 @@ sudo apt-get -y install debconf-utils
 sudo apt-get -y install apache2 
 ```
 
-User und Passwort für den Datenbank-Server konfigurieren.<br>
-Benutzer: root<br>
-Passwort: Hallo123
+Benutzer und Passwort für den Datenbank-Server konfigurieren.<br>
+**Benutzer:** root<br>
+**Passwort:** Hallo123
 
 ```
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password Hallo123'
@@ -96,10 +95,20 @@ sudo ufw allow 22/tcp
 sudo ufw -f enable 
 ```
 
+Nachdem man "vagrant up" ausgeführt hat, ist der Service über http://localhost:8080/adminer.php im Webbrowser erreichbar. Dabei muss man sich mit dem definierten Benutzernamen und Passwort anmelden.
+
+![UserInterface](./bilder/user_interface.png)
+
 ## Testen
+| Nr.            | Erwartung           | Ergebnis         | OK? |
+|:---------------|:--------------------|:---------------- |:----|
+| 1 | Die Datenbank ist via http://localhost:8080/adminer.php erreichbar. | Beim Aufrufen des Links erscheint das Anmeldefenster von Adminer. | OK |
+| 2 | Die Anmeldung ist mit dem angegeben Benutzer und Passwort erfolgreich. | Mit dem angegeben Benutzer und Passwort kann man sich anmelden. | OK |
 
 ## Sicherheit
 * Datenbank Server bzw. MySQL ist mit einem Passwort geschützt.
 * Firewall eingeschaltet. Port 22 für SSH und Port 80 für den Adminer freigeschaltet.
 
 ## Quellenverzeichnis
+* Datenbank Konfigurationen: https://github.com/mc-b/M300/tree/master/vagrant/db
+* Firewall Konfigurationen: https://github.com/mc-b/M300/tree/master/vagrant/fwrp
