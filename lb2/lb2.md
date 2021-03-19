@@ -9,9 +9,11 @@
 * 6 [Quellenverzeichnis](#quellenverzeichnis)
 
 ## Einleitung
-In diesem Dokument sind alle wichtigen technischen Informationen zu meiner Umgebung dokumentiert. Die Umgebung besitzt einen Datenbank-Server und eine Firewall. Mit dem Notebook soll es möglich sein über das Tool "Adminer" auf die MySQL-Datenbank zuzugreifen. Der Zugriff findet mit einem Benutzer und Passwort statt. Die Firewall in der Umgebung sollte für die Sicherheit sorgen. Dabei sollen nur die beiden Ports 22 und 80 zugelassen werden, da nur diese für den Zugriff benötigt werden.
+In diesem Dokument sind alle wichtigen technischen Informationen zu meiner Umgebung dokumentiert. Die Umgebung besitzt einen Datenbank-Server und eine Firewall. Mit dem Notebook soll es möglich sein über das Tool [Adminer](https://www.adminer.org/) auf die MySQL-Datenbank zuzugreifen. Der Zugriff findet mit einem Benutzer und Passwort statt. Die Firewall in der Umgebung sollte für die Sicherheit sorgen. Dabei sollen nur die beiden Ports 22 und 80 zugelassen werden, da nur diese für den Zugriff benötigt werden.
 
 ## Netzwerkplan
+Der Datenbank-Server besitzt die IP-Adresse "192.168.10.200". Er stellt die Services HTTP, SSH, Adminer und MySQL zur Verfügung. Zudem hat die Datenbank VM zwei Netzwerkadapter (Host-Only und NAT). Diese sind mit der Firewall verbunden, welche den Port 22 und 80 erlaubt. Somit ist die Datenbank über SSH und HTTP erreichbar.
+
 ![Netzwerkplan](./bilder/netzwerkplan.png)    
 
 ## Konfiguration
@@ -104,6 +106,7 @@ Nachdem man "vagrant up" ausgeführt hat, ist der Service über http://localhost
 |:---------------|:--------------------|:---------------- |:----|
 | 1 | Die Datenbank ist via http://localhost:8080/adminer.php erreichbar. | Beim Aufrufen des Links erscheint das Anmeldefenster von Adminer. | OK |
 | 2 | Die Anmeldung ist mit dem angegeben Benutzer und Passwort erfolgreich. | Mit dem angegeben Benutzer und Passwort kann man sich anmelden. | OK |
+| 3 | Mit SSH kann auf die VM zugegriffen werden. | In Git Bash "vagrant ssh" eingegeben und die Verbindung zur VM wurde hergestellt. | OK |
 
 ## Sicherheit
 * Datenbank Server bzw. MySQL ist mit einem Passwort geschützt.
