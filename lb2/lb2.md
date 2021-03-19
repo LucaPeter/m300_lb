@@ -1,57 +1,59 @@
-<h1>LB2 - Datenbank-Server mit einer Firewall</h1>
-<h2>Inhaltsverzeichnis</h2>
-<p>Einleitung<br>Grafische Übersicht<br>Konfiguration<br>Testen<br>Sicherheit<br>Quellenverzeichnis</p>
+# LB2 - Datenbank-Server mit einer Firewall
 
-<h2>Einleitung</h2>
-<p>In meiner LB2 werde ich einen Datenbank-Server mit MySQL erstellen. Zudem werde ich eine Firewall einsetzen </p>
-<h2>Grafische Übersicht</h2>
-<p>+--------------------+<br>        
-! Datenbank Server   !<br>          
-! Host: db01         !<br>         
-! IP: 192.168.1.100  !<br>
-! Port: 3306         !<br>          
-! Nat: -             !<br>          
-+--------------------+</p>         
+## Inhaltsverzeichnis
 
-<h2>Konfiguration</h2>
-<p>Eine benannte virtuelle Umgebung definieren.</p>
+* 1 [Einleitung](#einleitung) 
+* 2 [Netzwerkplan](#netzwerkplan)
+* 3 [Konfiguration](#konfiguration)
+* 4 [Testen](#testen)
+* 5 [Sicherheit](#sicherheit)
+* 6 [Quellenverzeichnis](#quellenverzeichnis)
+
+## Einleitung
+In meiner LB2 werde ich einen Datenbank-Server mit MySQL erstellen. Zudem werde ich eine Firewall einsetzen 
+
+## Netzwerkplan
+     
+
+## Konfiguration
+Eine benannte virtuelle Umgebung definieren.
 
 `config.vm.define "db-server" do |db|`
 
-<p>Den Typ des Betriebssystems angeben, welches in Virtualbox verwendet wird.</p>
+Den Typ des Betriebssystems angeben, welches in Virtualbox verwendet wird.
 
 `config.vm.box = "ubuntu/bionic64"`
 
-<p>Virtualisierungsplattform definieren.</p>
+Virtualisierungsplattform definieren.
 
 `db.vm.provider "virtualbox" do |vb|`
 
-<p>Anzahl RAM für die VM.</p>
+Anzahl RAM für die VM.
 
 `vb.memory = "1024"`
 
-<p>Hostname des Datenbank-Servers.</p>
+Hostname des Datenbank-Servers.
 
 `db.vm.hostname = "db01"`
 
-<p>Die Netzwerkeinstellungen mit der IP-Adresse und dem Port konfigurieren. Der Port 8080 wird verwendet, um auf das User Interface via Webbrowser zu gelangen.</p>
+Die Netzwerkeinstellungen mit der IP-Adresse und dem Port konfigurieren. Der Port 8080 wird verwendet, um auf das User Interface via Webbrowser zu gelangen.
 
 ```
 db.vm.network "private_network", ip: "192.168.10.200"`
 db.vm.network "forwarded_port", guest:80, host:8080, auto_correct: false
 ```
-<p>Shell-Skript innerhalb des Gastbetriebssystems direkt nach dem Hochfahren ausführen. Das Skript wird im File "db.sh" gespeichert.</p>
+Shell-Skript innerhalb des Gastbetriebssystems direkt nach dem Hochfahren ausführen. Das Skript wird im File "db.sh" gespeichert.
 
 `db.vm.provision "shell", path: "db.sh"`
 
-<p>Die Shell starten, um die nötigen Befehle auszuführen.</p>
+Die Shell starten, um die nötigen Befehle auszuführen.
 
 ```
 config.vm.provision "shell", inline: <<-SHELL 
 set -o xtrace
 ```
 
-<p>Alle Paketlisten neu einlesen und aktualiseren. Zudem ein zentrales System zur Verwaltung von Debian Paketen (debconf-utils) und einen Webserver (apache2) installieren.</p>
+Alle Paketlisten neu einlesen und aktualiseren. Zudem ein zentrales System zur Verwaltung von Debian Paketen (debconf-utils) und einen Webserver (apache2) installieren.
 
 ```
 sudo apt-get update
@@ -59,20 +61,20 @@ sudo apt-get -y install debconf-utils
 sudo apt-get -y install apache2 
 ```
 
-<p>User und Passwort für den Datenbank-Server konfigurieren.<br>
+User und Passwort für den Datenbank-Server konfigurieren.<br>
 Benutzer: root<br>
-Passwort: Hallo123</p>
+Passwort: Hallo123
 
 ```
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password Hallo123'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password Hallo123'
 ```
 
-<p>PHP und seine Apachemodule, sowie MySQL installieren. Mit PHP wird die Datenbank auf dem Interface angezeigt</p>
+PHP und seine Apachemodule, sowie MySQL installieren. Mit PHP wird die Datenbank auf dem Interface angezeigt
 
 `sudo apt-get -y install php libapache2-mod-php php-curl php-cli php-mysql php-gd mysql-client mysql-server` 
 
-<p>Als nächstes installiert man Adminer. Adminer ist ein Tool zum Verwalten von Inhalten in MySQL-Datenbanken. Es ist eine Alternative zu phpMyAdmin. Dabei wird ein Verzeichnis erstellt und alle nötigen Dateien installiert.</p>
+Als nächstes installiert man Adminer. Adminer ist ein Tool zum Verwalten von Inhalten in MySQL-Datenbanken. Es ist eine Alternative zu phpMyAdmin. Dabei wird ein Verzeichnis erstellt und alle nötigen Dateien installiert.
 
 ```	
 sudo mkdir /usr/share/adminer
@@ -82,21 +84,22 @@ echo "Alias /adminer.php /usr/share/adminer/adminer.php" | sudo tee /etc/apache2
 sudo a2enconf adminer.conf  
 ```
 
-<p>Webserver neustarten.
+Webserver neustarten.
 
 `sudo service apache2 restart`
 
-<p>Firewall Regeln.</p> 
+Firewall Regeln konfigurieren. Die Firewall lässt den Port 22 für SSH und Port 80 für den Adminer frei.
 
 ```  
 sudo ufw allow 80/tcp 
 sudo ufw allow 22/tcp 
 sudo ufw -f enable 
 ```
-<h2>Testen</h2>
 
-<h2>Sicherheit</h2>
-<p>- Datenbank Server bzw. MySQL ist mit einem Passwort geschützt<br>
-- Nur die Ports 80 und 22 werden von den Firewall zugelassen</p>
+## Testen
 
-<h2>Quellenverzeichnis</h2>
+## Sicherheit
+* Datenbank Server bzw. MySQL ist mit einem Passwort geschützt.
+* Firewall eingeschaltet. Port 22 für SSH und Port 80 für den Adminer freigeschaltet.
+
+## Quellenverzeichnis

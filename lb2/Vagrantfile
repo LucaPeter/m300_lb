@@ -24,8 +24,7 @@ config.vm.provision "shell", inline: <<-SHELL
 	echo "Alias /adminer.php /usr/share/adminer/adminer.php" | sudo tee /etc/apache2/conf-available/adminer.conf
 	sudo a2enconf adminer.conf 
 	sudo service apache2 restart 
-
-  sudo ufw allow 3306/tcp 
+ 
   sudo ufw allow 80/tcp 
   sudo ufw allow 22/tcp 
   sudo ufw -f enable 
