@@ -43,7 +43,7 @@ Die Netzwerkeinstellungen mit der IP-Adresse und dem Port konfigurieren. Der Por
 db.vm.network "private_network", ip: "192.168.10.200"`
 db.vm.network "forwarded_port", guest:80, host:8080, auto_correct: false
 ```
-Shell-Skript innerhalb des Gastbetriebssystems direkt nach dem Hochfahren ausführen. Das Skript wird im File "db.sh" gespeichert.
+Shell-Skript innerhalb des Gastbetriebssystems direkt nach dem Hochfahren ausführen. Das Skript wird im File [db.sh](https://github.com/hmah02/m300_lb/blob/main/lb2/db.sh) gespeichert.
 
 `db.vm.provision "shell", path: "db.sh"`
 
@@ -71,7 +71,7 @@ sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password passwor
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password Hallo123'
 ```
 
-PHP und seine Apachemodule, sowie MySQL installieren. Mit PHP wird die Datenbank auf dem Interface angezeigt
+PHP und seine Apachemodule, sowie MySQL installieren. Mit PHP wird die Datenbank auf dem Interface angezeigt.
 
 `sudo apt-get -y install php libapache2-mod-php php-curl php-cli php-mysql php-gd mysql-client mysql-server` 
 
@@ -89,7 +89,7 @@ Webserver neustarten.
 
 `sudo service apache2 restart`
 
-Firewall Regeln konfigurieren. Die Firewall lässt den Port 22 für SSH und Port 80 für den Adminer frei.
+Firewall Regeln konfigurieren. Die Firewall lässt den Port 22 für SSH und Port 80 für den Adminer frei. Die restlichen Ports sind blockiert.
 
 ```  
 sudo ufw allow 80/tcp 
@@ -110,7 +110,7 @@ Nachdem man "vagrant up" ausgeführt hat, ist der Service über http://localhost
 
 ## Sicherheit
 * Datenbank Server bzw. MySQL ist mit einem Passwort geschützt.
-* Firewall eingeschaltet. Port 22 für SSH und Port 80 für den Adminer freigeschaltet.
+* Firewall eingeschaltet. Nur der Port 22 für SSH und Port 80 für den Adminer sind freigeschaltet.
 
 ## Quellenverzeichnis
 * Datenbank Konfigurationen: https://github.com/mc-b/M300/tree/master/vagrant/db
