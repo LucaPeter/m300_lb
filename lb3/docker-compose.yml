@@ -1,0 +1,7 @@
+version: '2'
+services:
+  apache:
+    image: apache2
+    command: /bin/sh -c ". /etc/apache2/envvars && apache2 -k start && tail -F /etc/apache2/apache2.conf"
+    ports:
+      - 80:80
