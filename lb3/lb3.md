@@ -32,7 +32,7 @@ Damit man diese Umgebung zum Laufen bringt, müssen ein paar Vorbereitungen gema
 Anschliessend kann der Container mit docker build -t web03 . gebaut werden. Nachdem der Cointainer gebaut wurde, startet man die Umgebung mit "docker-compose up -d".
 
 ## Grafische Übersicht
-Die Umgebung besitzt ein internes Netzwerk mit dem Subnetz 192.168.0.0/16. Der Reverse Proxy und die drei Apache-Webserver haben eine eigene IP-Adresse. Jedoch ist nur der Reverse Proxy von extern über den NAT-Port 8080 erreichbar. NAT (Network Address Translation) wird hier verwendet, um die öffentliche IP-Adresse in die private und umgekehrt umzuwandeln.
+Die Umgebung besitzt ein internes Netzwerk mit dem Subnetz 172.28.0.0/16. Der Reverse Proxy und die drei Apache-Webserver haben eine eigene IP-Adresse. Jedoch ist nur der Reverse Proxy von extern über den NAT-Port 80 erreichbar. NAT (Network Address Translation) wird hier verwendet, um die öffentliche IP-Adresse in die private und umgekehrt umzuwandeln.
 
 ![Netzwerkplan](./Bilder/Netzwerkplan.png)
 
@@ -76,15 +76,15 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 8080:80
+      - 80:80
     restart: always
     networks:
         testing_net:
-            ipv4_address: 192.168.60.102
+            ipv4_address: 172.28.1.2
 ```
 
 ```
-Web_App_1:
+  Web_App_1:
     image: httpd
     container_name: Web_App_1
     volumes:
@@ -96,9 +96,9 @@ Web_App_1:
       - nginx
     networks:
         testing_net:
-            ipv4_address: 192.168.60.103
+            ipv4_address: 172.28.1.3
 
-Web_App_2:
+  Web_App_2:
     image: httpd
     container_name: Web_App_2
     volumes:
@@ -110,11 +110,11 @@ Web_App_2:
       - Web_App_1
     networks:
         testing_net:
-            ipv4_address: 192.168.60.104
+            ipv4_address: 172.28.1.4
 ```
 
 ```
-Web_App_3:
+  Web_App_3:
     image: web03
     container_name: Web_App_3
     volumes:
@@ -124,23 +124,61 @@ Web_App_3:
     restart: always
     networks:
         testing_net:
-            ipv4_address: 192.168.60.105
+            ipv4_address: 172.28.1.5
 ```
 
-Hier wird das interne Netzwerk mit dem Subnetz "192.168.0.0/16" erstellt.
+Hier wird das interne Netzwerk mit dem Subnetz "172.28.0/16" erstellt.
 ```
 networks:
     testing_net:
         ipam:
             driver: default
             config:
-                - subnet: 192.168.0.0/16
+                - subnet: 172.28.0.0/16
 ```
 
 ### nginx.conf
 
 
 ## Testen
+Ich habe sechs Testfälle durchgeführt. Dabei wurde jeder Service auf die Funktion getestet. Das Ergebnis wird mit einem Bild gezeigt.
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 1 | Docker | Der Befehl "docker build -t web03 ." wird eingegeben. Danach wird der Container mit dem Image "web03" gebaut. | Nach dem Eingeben des Befehls wurde der Container mit dem Image gebaut.  | OK |
+
+![Test1](./Bilder/Test1.png)
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 2 | Docker | Der Befehl "docker-compose up -d" wird eingegeben. Anschliessend wird der Container erstellt und gestartet. | Nach dem Eingeben des Befehls wurde der Container erstellt und gestartet. | OK |
+
+![Test2](./Bilder/Test2.png)
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 3 | Proxy Server | Wenn im Browser "http://localhost:8080" eingegeben wird, gibt Nginx den Fehler 404 zurück. | Auf der Webseite wird der Fehler 404 zurückgegeben.  | OK |
+
+![Test3](./Bilder/Test3.png)
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 4 | Webserver 1 (Web_App_1)| Wenn im Browser "http://localhost:8080/web1" eingegeben wird, erscheint eine rote Webseite mit dem Text "Webseite 1" und "Roter Hintergrund". | Die Webseite ist rot und wird mit dem Text "Webseite 1" und "Roter Hintergrund" angezeigt.  | OK |
+
+![Test4](./Bilder/Test4.png)
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 5 | Webserver 2 (Web_App_2)| Wenn im Browser "http://localhost:8080/web2" eingegeben wird, erscheint eine blaue Webseite mit dem Text "Webseite 2". | Die Webseite ist blau und wird mit dem Text "Webseite 2" und "Blauer Hintergrund" angezeigt. | OK |
+
+![Test5](./Bilder/Test5.png)
+
+| Nr.            | Service           | Erwartung         | Ergebnis | OK? |
+|:---------------|:------------------|:----------------- |:---------|:----|
+| 6 | Webserver 3 (Web_App_3)| Wenn im Browser "http://localhost:8080/web3" eingegeben wird, erscheint eine gelbe Webseite mit dem Text "Webseite 3". | Die Webseite ist gelb und wird mit dem Text "Webseite 3" und "Gelber Hintergrund" angezeigt. | OK |
+
+![Test6](./Bilder/Test6.png)
+
 
 ## Quellenverzeichnis
 * Apache-Webserver: https://de.wikipedia.org/wiki/Apache_HTTP_Server
